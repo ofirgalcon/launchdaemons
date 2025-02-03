@@ -93,23 +93,3 @@ $(document).on('click', '.view-daemon', function(e){
 });
 </script>
 
-<!-- Bootstrap Modal for displaying daemon_json details -->
-<div class="modal fade" id="launchdaemonsDetailModal" tabindex="-1" role="dialog" aria-labelledby="launchdaemonsDetailModalLabel">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-             <span aria-hidden="true">&times;</span>
-         </button>
-         <h4 class="modal-title" id="launchdaemonsDetailModalLabel"></h4>
-      </div>
-      <div class="modal-body">
-         <pre id="launchdaemonsDetailContent"></pre>
-      </div>
-      <div class="modal-footer">
-         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
