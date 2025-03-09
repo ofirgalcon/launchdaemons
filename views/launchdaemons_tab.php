@@ -10,14 +10,50 @@
         <i class="btn btn-default tab-btn fa fa-th"></i>
     </a>
 </div>
-<h2 data-i18n="launchdaemons.launchdaemons"></h2>
+<h2><i class="fa fa-rocket"></i> <span data-i18n="launchdaemons.launchdaemons"></span></h2>
 <div style="clear: both"></div>
 
-<!-- New container for dynamic content inserted via JS -->
-<div id="launchdaemons-tab-content"></div>
+<!-- Sub-tabs for Launch Daemons and Launch Agents -->
+<div id="launchdaemons-tab-content">
+    <style>
+        /* Prevent text selection cursor on tabs */
+        .nav-tabs > li > a {
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+    </style>
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a data-toggle="tab" data-target="#launchdaemons-subtab" title="View system-wide daemons that run as root">Launch Daemons</a>
+        </li>
+        <li>
+            <a data-toggle="tab" data-target="#launchagents-subtab" title="View per-user agents that run in user context">Launch Agents</a>
+        </li>
+    </ul>
+    <div class="tab-content" style="margin-top: 15px;">
+        <div id="launchdaemons-subtab" class="tab-pane fade in active"></div>
+        <div id="launchagents-subtab" class="tab-pane fade"></div>
+    </div>
+</div>
 
 <script>
 $(document).on('appReady', function(){
+    // Get the original hash when the page loads
+    const originalHash = window.location.hash || '#tab_launchdaemons-tab';
+
+    // Use a more specific selector for just our tab container
+    $('#launchdaemons-tab-content .nav-tabs a').on('click', function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+        // Restore the original hash
+        if (window.location.hash !== originalHash) {
+            history.pushState(null, null, originalHash);
+        }
+    });
+
     // Cache common selectors (if needed)
     const $launchdaemonsCnt = $('#launchdaemons-cnt');
     
@@ -32,12 +68,16 @@ $(document).on('appReady', function(){
         // Update record count
         $launchdaemonsCnt.text(data.length);
         
-        // Build HTML output for each record using the chunk array
-        const chunks = [];
+        // Prepare two separate arrays – one for daemons and one for agents
+        const daemonChunks = [];
+        const agentChunks = [];
+        
         for (let i = 0, len = data.length; i < len; i++) {
             const d = data[i];
-            // Add record header
-            chunks.push(`<h4><i class="fa fa-paper-plane"></i> ${d.label}</h4><ul class="list-group">`);
+            const isDaemon = d.path.includes('LaunchDaemons');
+            
+            // Build record header and content
+            let recordChunk = `<h4><i class="fa fa-paper-plane"></i> ${d.label}</h4><ul class="list-group">`;
             
             // Add record properties one by one
             for (const prop in d) {
@@ -59,13 +99,21 @@ $(document).on('appReady', function(){
                 else {
                     item += d[prop];
                 }
-                chunks.push(item + '</li>');
+                recordChunk += item + '</li>';
             }
-            chunks.push('</ul>');
+            recordChunk += '</ul>';
+            
+            // Split into the two sub-tabs based on path
+            if (isDaemon) {
+                daemonChunks.push(recordChunk);
+            } else {
+                agentChunks.push(recordChunk);
+            }
         }
         
-        // Insert the dynamic content into the container placed below the header
-        $('#launchdaemons-tab-content').html(chunks.join(''));
+        // Insert the dynamic content into the respective sub-tabs
+        $('#launchdaemons-subtab').html(daemonChunks.join(''));
+        $('#launchagents-subtab').html(agentChunks.join(''));
     });
 });
 

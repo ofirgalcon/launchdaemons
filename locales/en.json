@@ -1,7 +1,7 @@
 {
-    "launchdaemons": "Launch Daemons",
+    "launchdaemons": "Launch Daemons & Agents",
     "daemon_json": "Daemon Contents",
-    "report": "Launch Daemons Report",
+    "report": "Launch Daemons & Agents Report",
     "seconds": "seconds",
     "minutes": "minutes",
     "hours": "hours",
